@@ -1,0 +1,10 @@
+<h1>Dashboard</h1>
+<form action="/update" method="POST">
+    <input type="text" name="name" value="<%= user.name %>" placeholder="Name"><br>
+    <textarea name="bio" placeholder="Bio"><%= user.bio %></textarea><br>
+    <textarea name="links" placeholder="Links: Label|URL (one per line)">
+<% user.links.forEach(l => { %><%= l.label %>|<%= l.url %>
+<% }) %></textarea><br>
+    <button type="submit">Update</button>
+</form>
+<a href="/logout">Logout</a>
