@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John | evolu.space</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div class="container">
+  <img id="profile-img" class="profile-img" src="profile.png" alt="Profile Image">
+  <h1 id="name">Loading...</h1>
+  <p id="bio" class="bio"></p>
+  <div class="links" id="links"></div>
+</div>
+
+<script src="../../js/profile.js"></script>
+<script>
+  fetch('profile.json')
+    .then(res => res.json())
+    .then(data => renderProfile(data))
+    .catch(err => console.error(err));
+</script>
+</body>
+</html>
