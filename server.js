@@ -26,6 +26,7 @@ function saveUsers() {
 // Routes
 app.get('/', (req, res) => res.redirect('/login'));
 
+// Login / Register
 app.get('/login', (req, res) => res.render('login', { error: null }));
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -46,32 +47,3 @@ app.post('/register', async (req, res) => {
 
     const hash = await bcrypt.hash(password, 10);
     users[email] = { password: hash, name: 'Your Name', bio: 'Your bio', links: [] };
-    saveUsers();
-    res.redirect('/login');
-});
-
-app.get('/dashboard', (req, res) => {
-    if (!req.session.user) return res.redirect('/login');
-    res.render('dashboard', { user: users[req.session.user] });
-});
-
-app.post('/update', (req, res) => {
-    if (!req.session.user) return res.redirect('/login');
-    const { name, bio, links } = req.body;
-    const user = users[req.session.user];
-    user.name = name;
-    user.bio = bio;
-    user.links = links.split('\n').map(line => {
-        const [label, url] = line.split('|');
-        return { label: label.trim(), url: url.trim() };
-    });
-    saveUsers();
-    res.redirect('/dashboard');
-});
-
-app.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/login');
-});
-
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
