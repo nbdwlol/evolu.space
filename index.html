@@ -1,25 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login | evolu.space</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/auth.css">
+  <meta charset="UTF-8">
+  <title>evolu.space — Login / Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: #fff;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .tabs button.active {
+      background: rgba(255,255,255,0.4);
+    }
+    form {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    form.active {
+      display: flex;
+    }
+    input {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 1rem;
+    }
+    button.submit {
+      background: #fff;
+      color: #4facfe;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    button.submit:hover {
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
-<div class="auth-wrapper">
-  <div class="auth-card">
-    <h1 class="logo">evolu<span>.space</span></h1>
-    <form id="login-form">
-      <input type="text" id="login-username" placeholder="Username" required>
+  <div class="card">
+    <h1>evolu.space</h1>
+    <div class="tabs">
+      <button id="login-tab" class="active">Login</button>
+      <button id="signup-tab">Sign Up</button>
+    </div>
+
+    <!-- Login -->
+    <form id="login-form" class="active">
+      <input type="email" id="login-email" placeholder="Email" required>
       <input type="password" id="login-password" placeholder="Password" required>
-      <button type="submit">Login</button>
-      <p class="switch">Don't have an account? <a href="/signup.html">Sign Up</a></p>
-      <p class="forgot"><a href="#" id="forgot-btn">Forgot Password?</a></p>
+      <button class="submit" type="submit">Login</button>
+    </form>
+
+    <!-- Signup -->
+    <form id="signup-form">
+      <input type="text" id="signup-username" placeholder="Username" required>
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <button class="submit" type="submit">Sign Up</button>
     </form>
   </div>
-</div>
-<script src="/js/auth.js"></script>
+
+  <script>
+    // Supabase init
+    const supabase = supabase.createClient(
+      "https://YOUR-PROJECT-ID.supabase.co",
+      "YOUR-ANON-PUBLIC-KEY"
+    );
+
+    // Tabs
+    const loginTab = document.getElementById("login-tab");
+    const signupTab = document.getElementById("signup-tab");
+    const loginForm = document.getElementById("login-form");
+    const signupForm = document.getElementById("signup-form");
+
+    loginTab.onclick = () => {
+      loginTab.classList.add("active");
+      signupTab.classList.remove("active");
+      loginForm.classList.add("active");
+      signupForm.classList.remove("active");
+    };
+    signupTab.onclick = () => {
+      signupTab.classList.add("active");
+      loginTab.classList.remove("active");
+      signupForm.classList.add("active");
+      loginForm.classList.remove("active");
+    };
+
+    // Login
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return alert(error.message);
+
+      // Get username from profiles
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("email", email)
+        .single();
+
+      if (profile) window.location.href = "/" + profile.username;
+    });
+
+    // Signup
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("signup-username").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) return alert(error.message);
+
+      await supabase.from("profiles").insert([{ username, email }]);
+
+      window.location.href = "/" + username;
+    });
+  </script>
 </body>
 </html>
