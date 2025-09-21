@@ -4,80 +4,16 @@
   <meta charset="UTF-8">
   <title>evolu.space — Login / Signup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+  <!-- Fonts + Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+
+  <!-- Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      color: #fff;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .tabs button {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: rgba(255,255,255,0.2);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: background 0.3s;
-    }
-    .tabs button.active {
-      background: rgba(255,255,255,0.4);
-    }
-    form {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-    }
-    form.active {
-      display: flex;
-    }
-    input {
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      outline: none;
-      font-size: 1rem;
-    }
-    button.submit {
-      background: #fff;
-      color: #4facfe;
-      font-weight: bold;
-      cursor: pointer;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      transition: transform 0.2s;
-    }
-    button.submit:hover {
-      transform: translateY(-2px);
-    }
-  </style>
 </head>
 <body>
   <div class="card">
@@ -137,7 +73,6 @@
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return alert(error.message);
 
-      // Get username from profiles
       const { data: profile } = await supabase
         .from("profiles")
         .select("username")
@@ -154,7 +89,7 @@
       const email = document.getElementById("signup-email").value;
       const password = document.getElementById("signup-password").value;
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { error } = await supabase.auth.signUp({ email, password });
       if (error) return alert(error.message);
 
       await supabase.from("profiles").insert([{ username, email }]);
