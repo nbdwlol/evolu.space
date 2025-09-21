@@ -11,76 +11,75 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
+  <!-- Styles -->
   <style>
-    /* Reset */
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
-
     body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
       background: linear-gradient(135deg, #ffb6c1, #ff69b4);
       perspective: 1000px;
-      overflow: hidden;
+      overflow:hidden;
     }
 
-    /* Floating card */
     .card {
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 40px 30px;
-      width: 350px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      border-radius: 25px;
+      padding: 50px 35px;
+      width: 380px;
+      text-align:center;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.2);
       transition: transform 0.1s ease-out;
+      position: relative;
     }
 
     h1 {
-      font-size: 2.4rem;
+      font-size: 2.5rem;
       color: #fff;
       margin-bottom: 20px;
       text-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
       margin-bottom: 25px;
     }
 
     .tabs button {
       flex:1;
-      padding: 10px;
+      padding:12px;
       border:none;
-      border-radius: 12px;
+      border-radius: 15px;
       background: rgba(255,255,255,0.25);
       color: #fff;
       font-weight:600;
       cursor:pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
 
     .tabs button.active {
       background: rgba(255,255,255,0.45);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     }
 
-    form { display:flex; flex-direction:column; gap:12px; }
+    form { display:flex; flex-direction:column; gap:14px; transition: opacity 0.3s; }
+    form:not(.active) { display:none; }
 
     input {
-      padding: 12px;
+      padding: 14px;
       border:none;
-      border-radius:12px;
+      border-radius:15px;
       outline:none;
       font-size:1rem;
       background: rgba(255,255,255,0.2);
       color: #fff;
-      transition: transform 0.1s ease-out, background 0.3s;
+      transition: transform 0.1s, background 0.3s, box-shadow 0.3s;
     }
-
     input::placeholder { color: rgba(255,255,255,0.7); }
 
     button.submit {
@@ -89,26 +88,36 @@
       font-weight:bold;
       cursor:pointer;
       border:none;
-      padding:12px;
-      border-radius:12px;
-      transition: transform 0.1s ease-out, background 0.3s;
+      padding:14px;
+      border-radius:15px;
+      transition: transform 0.1s, background 0.3s, box-shadow 0.3s;
+    }
+    button.submit:hover { background: #ffe0f0; transform: translateY(-3px); }
+
+    .message {
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border-radius: 15px;
+      font-weight: 600;
+      color: #fff;
+      opacity:0;
+      pointer-events:none;
+      transition: all 0.3s;
     }
 
-    button.submit:hover {
-      background: #ffe0f0;
-      transform: translateY(-3px);
-    }
+    .message.success { background: rgba(0,255,150,0.8); }
+    .message.error { background: rgba(255,50,50,0.8); }
 
-    /* Glow effect behind card */
     body::before {
       content: "";
       position: fixed;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.15), transparent 70%);
-      pointer-events: none;
+      top:-50%; left:-50%;
+      width:200%; height:200%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.12), transparent 70%);
+      pointer-events:none;
       transform: translate3d(0,0,0);
     }
   </style>
@@ -120,6 +129,8 @@
       <button id="login-tab" class="active">Login</button>
       <button id="signup-tab">Sign Up</button>
     </div>
+
+    <div id="message" class="message"></div>
 
     <!-- Login -->
     <form id="login-form" class="active">
@@ -140,15 +151,17 @@
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script>
     const supabase = supabase.createClient(
-      "https://YOUR-PROJECT-ID.supabase.co",
-      "YOUR-ANON-PUBLIC-KEY"
+      "https://YOUR-PROJECT-ID.supabase.co", // replace
+      "YOUR-ANON-PUBLIC-KEY"                // replace
     );
 
     const loginTab = document.getElementById("login-tab");
     const signupTab = document.getElementById("signup-tab");
     const loginForm = document.getElementById("login-form");
     const signupForm = document.getElementById("signup-form");
+    const messageEl = document.getElementById("message");
 
+    // Tab toggle
     loginTab.onclick = () => {
       loginTab.classList.add("active");
       signupTab.classList.remove("active");
@@ -162,28 +175,46 @@
       loginForm.classList.remove("active");
     };
 
+    function showMessage(text, type="success") {
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`;
+      messageEl.style.opacity = 1;
+      setTimeout(() => { messageEl.style.opacity = 0; }, 3000);
+    }
+
+    // Login
     loginForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
       const email = document.getElementById("login-email").value;
       const password = document.getElementById("login-password").value;
+
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if(error) return alert(error.message);
-      const { data: profile } = await supabase.from("profiles").select("username").eq("email", email).single();
-      if(profile) window.location.href = "/" + profile.username;
+      if(error) return showMessage(error.message, "error");
+
+      const { data: profile, error: profileError } = await supabase.from("profiles").select("username").eq("email", email).single();
+      if(profileError) return showMessage(profileError.message, "error");
+
+      showMessage("Login successful! Redirecting…", "success");
+      setTimeout(()=>window.location.href = "/" + profile.username, 1000);
     });
 
+    // Signup
     signupForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
       const username = document.getElementById("signup-username").value;
       const email = document.getElementById("signup-email").value;
       const password = document.getElementById("signup-password").value;
+
       const { error } = await supabase.auth.signUp({ email, password });
-      if(error) return alert(error.message);
+      if(error) return showMessage(error.message, "error");
+
       await supabase.from("profiles").insert([{ username, email }]);
-      window.location.href = "/" + username;
+
+      showMessage("Signup successful! Redirecting…", "success");
+      setTimeout(()=>window.location.href = "/" + username, 1000);
     });
 
-    // Cute cursor movement
+    // Cursor parallax effect
     const card = document.querySelector('.card');
     const inputs = document.querySelectorAll('input, button.submit');
 
