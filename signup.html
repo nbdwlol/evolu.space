@@ -8,19 +8,20 @@
 <link rel="stylesheet" href="/css/auth.css">
 </head>
 <body>
-<div class="auth-container">
-  <h1>evolu.space</h1>
-  <form id="signup-form">
-    <input type="text" id="signup-username" placeholder="Username" required>
-    <input type="password" id="signup-password" placeholder="Password" required>
-    <input type="email" id="signup-email" placeholder="Email" required>
-    <input type="text" id="signup-name" placeholder="Full Name" required>
-    <input type="url" id="signup-profile-img" placeholder="Profile Image URL" required>
-    <button type="submit">Sign Up</button>
-    <p>Already have an account? <a href="/index.html">Login</a></p>
-  </form>
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h1 class="logo">evolu<span>.space</span></h1>
+    <form id="signup-form">
+      <input type="text" id="signup-username" placeholder="Username" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="text" id="signup-name" placeholder="Full Name" required>
+      <input type="url" id="signup-profile-img" placeholder="Profile Image URL" required>
+      <button type="submit">Create Account</button>
+      <p class="switch">Already have an account? <a href="/index.html">Login</a></p>
+    </form>
+  </div>
 </div>
-
 <script src="/js/auth.js"></script>
 </body>
 </html>
