@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>evolu.space – login / signup</title>
+<title>evolu space – login / signup</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   body {
-    background: linear-gradient(135deg, #ffcce5, #ff99cc);
+    background: linear-gradient(135deg, #fff799, #ffea5c);
     font-family: "Poppins", sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
     text-transform: lowercase;
+    padding: 10px;
   }
 
   .card {
@@ -23,7 +24,7 @@
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     width: 350px;
-    max-width: 90%;
+    max-width: 100%;
     padding: 2rem;
     text-align: center;
     position: relative;
@@ -32,7 +33,7 @@
 
   h2 {
     margin-bottom: 1rem;
-    color: #ff4da6;
+    color: #ffb700;
     font-weight: 600;
   }
 
@@ -49,11 +50,11 @@
   }
 
   input:focus {
-    border: 1px solid #ff66b2;
+    border: 1px solid #ffb700;
   }
 
   button {
-    background: #ff66b2;
+    background: #ffb700;
     border: none;
     color: white;
     padding: 14px;
@@ -68,7 +69,7 @@
   }
 
   button:hover {
-    background: #ff3385;
+    background: #ffa500;
   }
 
   .tabs {
@@ -87,7 +88,7 @@
   }
 
   .tab.active {
-    background: #ff66b2;
+    background: #ffb700;
     color: white;
   }
 
@@ -121,19 +122,14 @@
   .error { color: red; }
   .success { color: green; }
 
-  /* MOBILE ADJUSTMENTS */
   @media (max-width: 480px) {
     .card {
       padding: 1.5rem;
+      max-height: 95vh;
+      overflow-y: auto;
     }
-    input, button {
-      padding: 12px;
-      font-size: 0.95rem;
-    }
-    .tab {
-      font-size: 0.85rem;
-      padding: 0.4rem 0.8rem;
-    }
+    input, button { padding: 12px; font-size: 0.95rem; }
+    .tab { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
     .form-container { min-height: 200px; }
   }
 </style>
@@ -145,6 +141,7 @@
       <div id="signup-tab" class="tab">signup</div>
     </div>
     <div class="form-container">
+      <!-- login -->
       <form id="login-form" class="active">
         <h2>login</h2>
         <input type="email" id="login-email" placeholder="email" required />
@@ -153,6 +150,7 @@
         <div class="message" id="login-message"></div>
       </form>
 
+      <!-- signup -->
       <form id="signup-form">
         <h2>signup</h2>
         <input type="text" id="signup-username" placeholder="username" required />
@@ -165,8 +163,8 @@
   </div>
 
 <script>
-const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaGZzZWVydGdhenB2cWhlZXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0MjI4NDUsImV4cCI6MjA3Mzk5ODg0NX0.hkFcKm7M0_yBI0jJ2y2WimLEiEtRstHPvUzC8q3yQck"; // replace
+const SUPABASE_URL = "https://your-project.supabase.co"; // replace
+const SUPABASE_KEY = "your-anon-key"; // replace
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const loginTab = document.getElementById("login-tab");
