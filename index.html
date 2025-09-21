@@ -179,7 +179,7 @@
 <script>
 const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaGZzZWVydGdhenB2cWhlZXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0MjI4NDUsImV4cCI6MjA3Mzk5ODg0NX0.hkFcKm7M0_yBI0jJ2y2WimLEiEtRstHPvUzC8q3yQck"; // replace
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const loginTab = document.getElementById("login-tab");
 const signupTab = document.getElementById("signup-tab");
@@ -213,18 +213,31 @@ signupForm.addEventListener("submit", async e => {
   const email = document.getElementById("signup-email").value;
   const password = document.getElementById("signup-password").value;
 
-  const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
-  if (authError) return showMessage("signup-message", authError.message, "error");
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username } } // optional user metadata
+    });
+    if (error) throw error;
 
-  const user = authData.user;
-  if (user) {
-    const { error: profileError } = await supabaseClient.from("profiles").insert([
-      { id: user.id, username, email }
+    // if email confirmation is required
+    if (data.user === null) {
+      showMessage("signup-message", "check your email to confirm your account", "success");
+      return;
+    }
+
+    // insert profile manually
+    const { error: profileError } = await supabase.from("profiles").insert([
+      { id: data.user.id, username, email }
     ]);
-    if (profileError) return showMessage("signup-message", profileError.message, "error");
+    if (profileError) throw profileError;
 
     showMessage("signup-message", "signup successful, redirecting...", "success");
-    setTimeout(() => window.location.href = "/" + username, 1000);
+    setTimeout(() => window.location.href = "/" + username, 1200);
+
+  } catch (err) {
+    showMessage("signup-message", err.message || "signup failed", "error");
   }
 });
 
@@ -234,16 +247,20 @@ loginForm.addEventListener("submit", async e => {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
 
-  const { data: authData, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if (error) return showMessage("login-message", error.message, "error");
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
-  const user = authData.user;
-  if (user) {
-    const { data: profile } = await supabaseClient.from("profiles").select("username").eq("id", user.id).maybeSingle();
-    if (profile) {
-      showMessage("login-message", "login successful, redirecting...", "success");
-      setTimeout(() => window.location.href = "/" + profile.username, 1000);
-    }
+    const { data: profile, error: profileError } = await supabase.from("profiles").select("username").eq("id", data.user.id).maybeSingle();
+    if (profileError) throw profileError;
+
+    if (!profile) throw new Error("profile not found");
+
+    showMessage("login-message", "login successful, redirecting...", "success");
+    setTimeout(() => window.location.href = "/" + profile.username, 1200);
+
+  } catch (err) {
+    showMessage("login-message", err.message || "login failed", "error");
   }
 });
 </script>
