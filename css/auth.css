@@ -1,0 +1,135 @@
+body {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg,#4facfe,#00f2fe);
+  margin:0;
+  color:#fff;
+}
+
+.auth-container {
+  background: rgba(0,0,0,0.25);
+  padding: 40px 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 320px;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 6px;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+  background: #fff;
+  color: #4facfe;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-container button:hover { background: #e0e0e0; }
+
+.auth-container a {
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg,#4facfe,#00f2fe);
+  margin:0;
+  color:#fff;
+}
+
+.auth-container {
+  background: rgba(0,0,0,0.25);
+  padding: 40px 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 320px;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 6px;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+  background: #fff;
+  color: #4facfe;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-container button:hover { background: #e0e0e0; }
+
+.auth-container a {
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg,#4facfe,#00f2fe);
+  margin:0;
+  color:#fff;
+}
+
+.auth-container {
+  background: rgba(0,0,0,0.25);
+  padding: 40px 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 320px;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 6px;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+  background: #fff;
+  color: #4facfe;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-container button:hover { background: #e0e0e0; }
+
+.auth-container a {
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+}
