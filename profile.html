@@ -4,62 +4,16 @@
   <meta charset="UTF-8">
   <title>Profile — evolu.space</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+  <!-- Fonts + Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+
+  <!-- Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      color: #fff;
-    }
-    .profile {
-      text-align: center;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      max-width: 400px;
-      width: 90%;
-    }
-    .avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.5);
-      object-fit: cover;
-      margin-bottom: 20px;
-    }
-    h1 {
-      margin-bottom: 10px;
-    }
-    p.bio {
-      margin-bottom: 20px;
-      color: rgba(255,255,255,0.9);
-    }
-    .links {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .links a {
-      background: rgba(255,255,255,0.2);
-      padding: 12px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #fff;
-      font-weight: 600;
-      transition: transform 0.2s, background 0.3s;
-    }
-    .links a:hover {
-      background: rgba(255,255,255,0.35);
-      transform: translateY(-2px);
-    }
-  </style>
 </head>
 <body>
   <div id="profile"></div>
@@ -87,7 +41,7 @@
 
       document.getElementById("profile").innerHTML = `
         <div class="profile">
-          <img src="${data.avatar_url || '/default.png'}" class="avatar">
+          <img src="${data.avatar_url || '/assets/default.png'}" class="avatar">
           <h1>@${data.username}</h1>
           <p class="bio">${data.bio || ''}</p>
           <div class="links">
