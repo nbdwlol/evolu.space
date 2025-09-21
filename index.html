@@ -17,7 +17,6 @@ body {
   text-transform: lowercase;
   padding: 10px;
 }
-
 .card {
   background: white;
   border-radius: 20px;
@@ -27,27 +26,23 @@ body {
   padding: 2rem;
   text-align: center;
 }
-
 .card-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 1.5rem;
 }
-
 .card-logo {
   width: 80px;
   height: 80px;
   object-fit: contain;
   margin-bottom: 0.75rem;
 }
-
 .tabs {
   display: flex;
   justify-content: space-around;
   margin-bottom: 1.5rem;
 }
-
 .tab {
   cursor: pointer;
   padding: 0.5rem 1rem;
@@ -56,26 +51,21 @@ body {
   transition: background 0.3s;
   font-size: 0.95rem;
 }
-
 .tab.active {
   background: #ffb700;
   color: white;
 }
-
 .form-container {
   display: flex;
   flex-direction: column;
 }
-
 form {
   display: none;
   flex-direction: column;
 }
-
 form.active {
   display: flex;
 }
-
 input {
   width: 100%;
   padding: 14px;
@@ -87,11 +77,7 @@ input {
   font-family: inherit;
   font-size: 1rem;
 }
-
-input:focus {
-  border: 1px solid #ffb700;
-}
-
+input:focus { border: 1px solid #ffb700; }
 button {
   background: #ffb700;
   border: none;
@@ -105,19 +91,10 @@ button {
   transition: background 0.3s;
   font-family: inherit;
 }
-
-button:hover {
-  background: #ffa500;
-}
-
-.message {
-  margin-top: 10px;
-  font-size: 0.9rem;
-}
-
-.error { color: red; }
-.success { color: green; }
-
+button:hover { background: #ffa500; }
+.message { margin-top: 10px; font-size: 0.9rem; }
+.error { color:red; }
+.success { color:green; }
 @media(max-width:480px){
   .card{padding:1.5rem;}
   input,button{padding:12px;font-size:0.95rem;}
@@ -156,12 +133,12 @@ button:hover {
 </div>
 
 <script>
-// --- Supabase setup ---
+// Supabase setup
 const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
 const SUPABASE_KEY = "YOUR_SUPABASE_KEY"; // replace
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- Tabs ---
+// Tabs
 const loginTab = document.getElementById("login-tab");
 const signupTab = document.getElementById("signup-tab");
 const loginForm = document.getElementById("login-form");
@@ -177,14 +154,14 @@ signupTab.addEventListener("click", () => {
   signupForm.classList.add("active"); loginForm.classList.remove("active");
 });
 
-// --- Messages ---
+// Messages helper
 function showMessage(elId, message, type){
   const el = document.getElementById(elId);
   el.textContent = message;
   el.className = "message " + type;
 }
 
-// --- Signup ---
+// Signup
 signupForm.addEventListener("submit", async e => {
   e.preventDefault();
   const username = document.getElementById("signup-username").value.trim();
@@ -193,23 +170,23 @@ signupForm.addEventListener("submit", async e => {
 
   try {
     const { data, error } = await supabase.auth.signUp({
-      email, password,
-      options: { data: { username } }
+      email, password, options: { data: { username } }
     });
-
     if(error) throw error;
 
-    // Insert profile immediately
-    const { error: profileError } = await supabase.from("profiles").insert([{ id: data.user?.id, username, email }]);
-    if(profileError) throw profileError;
+    // Insert profile
+    if(data.user) {
+      const { error: profileError } = await supabase.from("profiles").insert([{ id: data.user.id, username, email }]);
+      if(profileError) throw profileError;
+    }
 
-    showMessage("signup-message", "signup successful! check your email to confirm", "success");
-  } catch(err) {
-    showMessage("signup-message", err.message || "signup failed", "error");
+    showMessage("signup-message","Signup successful! Check your email to confirm.","success");
+  } catch(err){
+    showMessage("signup-message", err.message || "Signup failed","error");
   }
 });
 
-// --- Login ---
+// Login
 loginForm.addEventListener("submit", async e => {
   e.preventDefault();
   const email = document.getElementById("login-email").value.trim();
@@ -219,14 +196,15 @@ loginForm.addEventListener("submit", async e => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if(error) throw error;
 
+    // Fetch profile
     const { data: profile, error: profileError } = await supabase.from("profiles").select("username").eq("id", data.user.id).maybeSingle();
     if(profileError) throw profileError;
-    if(!profile) throw new Error("profile not found");
+    if(!profile) throw new Error("Profile not found.");
 
-    showMessage("login-message", "login successful, redirecting...", "success");
-    setTimeout(() => window.location.href="/" + profile.username, 1200);
+    showMessage("login-message", "Login successful, redirecting...", "success");
+    setTimeout(()=> window.location.href="/" + profile.username, 1000);
   } catch(err){
-    showMessage("login-message", err.message || "login failed", "error");
+    showMessage("login-message", err.message || "Login failed","error");
   }
 });
 </script>
