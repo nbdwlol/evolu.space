@@ -1,306 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>evolu space – login / signup</title>
-<link rel="icon" href="/favicon.ico" />
-<!-- supabase client -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root {
-    --yellow: #ffb700;
-    --yellow-dark: #ffa500;
-    --bg-a: #fff799;
-    --bg-b: #ffea5c;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-
-  html, body { height: 100%; }
-
   body {
-    background: linear-gradient(135deg, var(--bg-a), var(--bg-b));
+    background: linear-gradient(135deg, #fff799, #ffea5c);
+    font-family: "Poppins", sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
     min-height: 100vh;
+    margin: 0;
     text-transform: lowercase;
+    padding: 10px;
   }
 
-  /* card */
   .card {
-    width: 380px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    width: 350px;
     max-width: 100%;
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 18px 50px rgba(0,0,0,0.12);
+    padding: 2rem;
+    text-align: center;
     overflow: hidden;
+  }
+
+  .card-header {
     display: flex;
     flex-direction: column;
-    align-items: center;          /* center children horizontally */
-    padding: 20px 20px 28px;
+    align-items: center;
+    margin-bottom: 1.5rem;
   }
 
-<div class="card">
-  <div class="card-header">
-    <img src="https://i.pinimg.com/736x/01/3c/0b/013c0b61df562a9c90b991c98b7f7241.jpg" alt="evolu.space logo" class="card-logo">
-    <h1>evolu.space</h1>
-  </div>
+  .card-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 0.75rem;
+  }
 
-  <div class="tabs">
-    <button id="login-tab" class="active">login</button>
-    <button id="signup-tab">sign up</button>
-  </div>
-
-  <!-- Login -->
-  <form id="login-form" class="active">
-    <input type="email" id="login-email" placeholder="email" required>
-    <input type="password" id="login-password" placeholder="password" required>
-    <button class="submit" type="submit">login</button>
-  </form>
-
-  <!-- Signup -->
-  <form id="signup-form">
-    <input type="text" id="signup-username" placeholder="username" required>
-    <input type="email" id="signup-email" placeholder="email" required>
-    <input type="password" id="signup-password" placeholder="password" required>
-    <button class="submit" type="submit">sign up</button>
-  </form>
-</div>
-
-
-  /* tabs row */
   .tabs {
-    width: 100%;
     display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    justify-content: space-around;
+    margin-bottom: 1.5rem;
   }
+
   .tab {
-    padding: 8px 14px;
-    border-radius: 12px;
     cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
     font-weight: 600;
-    background: rgba(0,0,0,0.03);
-    color: #222;
-    transition: all .18s ease;
+    transition: background 0.3s;
+    font-size: 0.95rem;
   }
+
   .tab.active {
-    background: var(--yellow);
-    color: #fff;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    background: #ffb700;
+    color: white;
   }
 
-  /* inner container keeps inputs/button centered and limited width */
-  .form-inner {
-    width: 100%;
-    max-width: 320px;    /* controls horizontal width of inputs */
-    margin: 0 auto;
-  }
-
-  h2 {
-    color: var(--yellow);
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-align: center;
+  .form-container {
+    position: relative;
+    min-height: 240px;
   }
 
   form {
-    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  form.active { display: block; }
 
-  .field {
-    margin-bottom: 12px;
+  form.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
+  input {
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
+    padding: 14px;
+    margin: 10px 0;
     border: 1px solid #eee;
+    border-radius: 12px;
     outline: none;
+    transition: border 0.3s;
+    font-family: inherit;
     font-size: 1rem;
   }
-  input::placeholder { color: #9a9a9a; opacity: .9; }
 
   input:focus {
-    border-color: var(--yellow);
-    box-shadow: 0 6px 18px rgba(255,183,0,0.08);
+    border: 1px solid #ffb700;
   }
 
-  button.submit {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
+  button {
+    background: #ffb700;
     border: none;
-    background: var(--yellow);
-    color: #fff;
-    font-weight: 700;
+    color: white;
+    padding: 14px;
+    width: 100%;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 1rem;
+    margin-top: 12px;
+    transition: background 0.3s;
+    font-family: inherit;
+    text-transform: lowercase;
   }
-  button.submit:hover { background: var(--yellow-dark); }
+
+  button:hover {
+    background: #ffa500;
+  }
 
   .message {
     margin-top: 10px;
-    font-size: 0.92rem;
-    text-align: center;
-    min-height: 20px;
+    font-size: 0.9rem;
   }
-  .message.error { color: #c82323; }
-  .message.success { color: #14794d; }
 
-  /* ensure card never gets taller than viewport on short phones */
-  @media (max-height: 600px) {
+  .error { color: red; }
+  .success { color: green; }
+
+  @media (max-width: 480px) {
     .card {
-      max-height: 94vh;
-      padding: 12px;
+      padding: 1.5rem;
+      max-height: 95vh;
       overflow-y: auto;
     }
-    .form-inner { max-width: 100%; padding-bottom: 8px; }
-  }
-
-  /* extra mobile tweaks */
-  @media (max-width: 420px) {
-    .card { padding: 14px; }
-    .logo { width: 84px; height:84px; margin-bottom:10px; }
-    input, button.submit { padding: 12px; font-size: 0.98rem; }
+    input, button { padding: 12px; font-size: 0.95rem; }
+    .tab { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
+    .form-container { min-height: 220px; }
   }
 </style>
 </head>
 <body>
-
-  <div class="card" role="main" aria-labelledby="card-title">
-    <!-- top image: change src to your logo/avatar -->
-    <img class="logo" src="/assets/default.png" alt="evolu logo" />
-
-    <div class="tabs" role="tablist" aria-label="auth tabs">
-      <div id="login-tab" class="tab active" role="tab" aria-selected="true">login</div>
-      <div id="signup-tab" class="tab" role="tab" aria-selected="false">signup</div>
+  <div class="card">
+    <div class="card-header">
+      <img src="https://i.pinimg.com/736x/01/3c/0b/013c0b61df562a9c90b991c98b7f7241.jpg" alt="evolu.space logo" class="card-logo">
+      <h1>evolu space</h1>
     </div>
 
-    <div class="form-inner">
-      <!-- login form -->
-      <form id="login-form" class="active" aria-hidden="false">
-        <h2 id="card-title">login</h2>
-        <div class="field"><input id="login-email" type="email" placeholder="email" required /></div>
-        <div class="field"><input id="login-password" type="password" placeholder="password" required /></div>
-        <div class="field"><button class="submit" type="submit">login</button></div>
-        <div id="login-message" class="message" aria-live="polite"></div>
+    <div class="tabs">
+      <div id="login-tab" class="tab active">login</div>
+      <div id="signup-tab" class="tab">signup</div>
+    </div>
+
+    <div class="form-container">
+      <!-- login -->
+      <form id="login-form" class="active">
+        <input type="email" id="login-email" placeholder="email" required />
+        <input type="password" id="login-password" placeholder="password" required />
+        <button type="submit">login</button>
+        <div class="message" id="login-message"></div>
       </form>
 
-      <!-- signup form -->
-      <form id="signup-form" aria-hidden="true">
-        <h2>signup</h2>
-        <div class="field"><input id="signup-username" type="text" placeholder="username" required /></div>
-        <div class="field"><input id="signup-email" type="email" placeholder="email" required /></div>
-        <div class="field"><input id="signup-password" type="password" placeholder="password" required /></div>
-        <div class="field"><button class="submit" type="submit">signup</button></div>
-        <div id="signup-message" class="message" aria-live="polite"></div>
+      <!-- signup -->
+      <form id="signup-form">
+        <input type="text" id="signup-username" placeholder="username" required />
+        <input type="email" id="signup-email" placeholder="email" required />
+        <input type="password" id="signup-password" placeholder="password" required />
+        <button type="submit">sign up</button>
+        <div class="message" id="signup-message"></div>
       </form>
     </div>
   </div>
 
 <script>
-/*  Replace with your Supabase details */
-const SUPABASE_URL = "https://your-project.supabase.co"; // <--- replace
-const SUPABASE_KEY = "your-anon-key";                  // <--- replace
-
+const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaGZzZWVydGdhenB2cWhlZXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0MjI4NDUsImV4cCI6MjA3Mzk5ODg0NX0.hkFcKm7M0_yBI0jJ2y2WimLEiEtRstHPvUzC8q3yQck"; // replace
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* UI elements */
-const loginTab = document.getElementById('login-tab');
-const signupTab = document.getElementById('signup-tab');
-const loginForm = document.getElementById('login-form');
-const signupForm = document.getElementById('signup-form');
-const loginMessage = document.getElementById('login-message');
-const signupMessage = document.getElementById('signup-message');
+const loginTab = document.getElementById("login-tab");
+const signupTab = document.getElementById("signup-tab");
+const loginForm = document.getElementById("login-form");
+const signupForm = document.getElementById("signup-form");
 
-/* helper */
-function setActive(tabName) {
-  if (tabName === 'login') {
-    loginTab.classList.add('active');
-    signupTab.classList.remove('active');
-    loginForm.classList.add('active');
-    signupForm.classList.remove('active');
-    loginForm.setAttribute('aria-hidden','false');
-    signupForm.setAttribute('aria-hidden','true');
-  } else {
-    signupTab.classList.add('active');
-    loginTab.classList.remove('active');
-    signupForm.classList.add('active');
-    loginForm.classList.remove('active');
-    signupForm.setAttribute('aria-hidden','false');
-    loginForm.setAttribute('aria-hidden','true');
-  }
-}
-
-/* tab clicks */
-loginTab.addEventListener('click', () => setActive('login'));
-signupTab.addEventListener('click', () => setActive('signup'));
-
-/* show messages */
-function show(el, text, type = 'error') {
-  el.textContent = text;
-  el.className = `message ${type}`;
-}
-
-/* SIGNUP */
-signupForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  signupMessage.textContent = '';
-
-  const username = document.getElementById('signup-username').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const password = document.getElementById('signup-password').value;
-
-  if (!username || !email || !password) return show(signupMessage, 'please fill all fields', 'error');
-
-  const { data, error: signErr } = await supabaseClient.auth.signUp({ email, password });
-  if (signErr) return show(signupMessage, signErr.message, 'error');
-
-  const user = data.user;
-  if (!user) return show(signupMessage, 'unexpected error during signup', 'error');
-
-  const { error: profileErr } = await supabaseClient.from('profiles').insert([
-    { id: user.id, username, email }
-  ]);
-  if (profileErr) return show(signupMessage, profileErr.message, 'error');
-
-  show(signupMessage, 'signup successful — redirecting...', 'success');
-  setTimeout(() => window.location.href = '/' + encodeURIComponent(username), 900);
+loginTab.addEventListener("click", () => {
+  loginTab.classList.add("active");
+  signupTab.classList.remove("active");
+  loginForm.classList.add("active");
+  signupForm.classList.remove("active");
 });
 
-/* LOGIN */
-loginForm.addEventListener('submit', async (e) => {
+signupTab.addEventListener("click", () => {
+  signupTab.classList.add("active");
+  loginTab.classList.remove("active");
+  signupForm.classList.add("active");
+  loginForm.classList.remove("active");
+});
+
+function showMessage(elId, message, type) {
+  const el = document.getElementById(elId);
+  el.textContent = message;
+  el.className = "message " + type;
+}
+
+// signup
+signupForm.addEventListener("submit", async e => {
   e.preventDefault();
-  loginMessage.textContent = '';
+  const username = document.getElementById("signup-username").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
 
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  if (!email || !password) return show(loginMessage, 'please provide email and password', 'error');
+  const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+  if (authError) return showMessage("signup-message", authError.message, "error");
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if (error) return show(loginMessage, error.message, 'error');
+  const user = authData.user;
+  if (user) {
+    const { error: profileError } = await supabaseClient.from("profiles").insert([
+      { id: user.id, username, email }
+    ]);
+    if (profileError) return showMessage("signup-message", profileError.message, "error");
 
-  const user = data.user;
-  if (!user) return show(loginMessage, 'login succeeded but user not found', 'error');
+    showMessage("signup-message", "signup successful, redirecting...", "success");
+    setTimeout(() => window.location.href = "/" + username, 1000);
+  }
+});
 
-  const { data: profile, error: profileError } = await supabaseClient.from('profiles')
-    .select('username').eq('id', user.id).single();
+// login
+loginForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
 
-  if (profileError) return show(loginMessage, profileError.message, 'error');
+  const { data: authData, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) return showMessage("login-message", error.message, "error");
 
-  show(loginMessage, 'login successful — redirecting...', 'success');
-  setTimeout(() => window.location.href = '/' + encodeURIComponent(profile.username), 800);
+  const user = authData.user;
+  if (user) {
+    const { data: profile } = await supabaseClient.from("profiles").select("username").eq("id", user.id).maybeSingle();
+    if (profile) {
+      showMessage("login-message", "login successful, redirecting...", "success");
+      setTimeout(() => window.location.href = "/" + profile.username, 1000);
+    }
+  }
+});
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>evolu space – login / signup</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body {
+    background: linear-gradient(135deg, #fff799, #ffea5c);
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    text-transform: lowercase;
+    padding: 10px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    width: 350px;
+    max-width: 100%;
+    padding: 2rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 0.75rem;
+  }
+
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1.5rem;
+  }
+
+  .tab {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background 0.3s;
+    font-size: 0.95rem;
+  }
+
+  .tab.active {
+    background: #ffb700;
+    color: white;
+  }
+
+  .form-container {
+    position: relative;
+    min-height: 240px;
+  }
+
+  form {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  form.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    outline: none;
+    transition: border 0.3s;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+
+  input:focus {
+    border: 1px solid #ffb700;
+  }
+
+  button {
+    background: #ffb700;
+    border: none;
+    color: white;
+    padding: 14px;
+    width: 100%;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 12px;
+    transition: background 0.3s;
+    font-family: inherit;
+    text-transform: lowercase;
+  }
+
+  button:hover {
+    background: #ffa500;
+  }
+
+  .message {
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+
+  .error { color: red; }
+  .success { color: green; }
+
+  @media (max-width: 480px) {
+    .card {
+      padding: 1.5rem;
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+    input, button { padding: 12px; font-size: 0.95rem; }
+    .tab { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
+    .form-container { min-height: 220px; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <img src="/assets/logo.png" alt="evolu space logo" class="card-logo">
+      <h1>evolu space</h1>
+    </div>
+
+    <div class="tabs">
+      <div id="login-tab" class="tab active">login</div>
+      <div id="signup-tab" class="tab">signup</div>
+    </div>
+
+    <div class="form-container">
+      <!-- login -->
+      <form id="login-form" class="active">
+        <input type="email" id="login-email" placeholder="email" required />
+        <input type="password" id="login-password" placeholder="password" required />
+        <button type="submit">login</button>
+        <div class="message" id="login-message"></div>
+      </form>
+
+      <!-- signup -->
+      <form id="signup-form">
+        <input type="text" id="signup-username" placeholder="username" required />
+        <input type="email" id="signup-email" placeholder="email" required />
+        <input type="password" id="signup-password" placeholder="password" required />
+        <button type="submit">sign up</button>
+        <div class="message" id="signup-message"></div>
+      </form>
+    </div>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://your-project.supabase.co"; // replace
+const SUPABASE_KEY = "your-anon-key"; // replace
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const loginTab = document.getElementById("login-tab");
+const signupTab = document.getElementById("signup-tab");
+const loginForm = document.getElementById("login-form");
+const signupForm = document.getElementById("signup-form");
+
+loginTab.addEventListener("click", () => {
+  loginTab.classList.add("active");
+  signupTab.classList.remove("active");
+  loginForm.classList.add("active");
+  signupForm.classList.remove("active");
+});
+
+signupTab.addEventListener("click", () => {
+  signupTab.classList.add("active");
+  loginTab.classList.remove("active");
+  signupForm.classList.add("active");
+  loginForm.classList.remove("active");
+});
+
+function showMessage(elId, message, type) {
+  const el = document.getElementById(elId);
+  el.textContent = message;
+  el.className = "message " + type;
+}
+
+// signup
+signupForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const username = document.getElementById("signup-username").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+
+  const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+  if (authError) return showMessage("signup-message", authError.message, "error");
+
+  const user = authData.user;
+  if (user) {
+    const { error: profileError } = await supabaseClient.from("profiles").insert([
+      { id: user.id, username, email }
+    ]);
+    if (profileError) return showMessage("signup-message", profileError.message, "error");
+
+    showMessage("signup-message", "signup successful, redirecting...", "success");
+    setTimeout(() => window.location.href = "/" + username, 1000);
+  }
+});
+
+// login
+loginForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  const { data: authData, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) return showMessage("login-message", error.message, "error");
+
+  const user = authData.user;
+  if (user) {
+    const { data: profile } = await supabaseClient.from("profiles").select("username").eq("id", user.id).maybeSingle();
+    if (profile) {
+      showMessage("login-message", "login successful, redirecting...", "success");
+      setTimeout(() => window.location.href = "/" + profile.username, 1000);
+    }
+  }
 });
 </script>
 </body>
