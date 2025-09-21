@@ -67,30 +67,53 @@ body::before {
       <button id="signup-tab">Sign Up</button>
     </div>
 
-    <!-- Login -->
-    <form id="login-form" class="active">
-      <input type="email" id="login-email" placeholder="Email" required>
-      <input type="password" id="login-password" placeholder="Password" required>
-      <button class="submit" type="submit">Login</button>
-    </form>
+// Signup
+signupForm.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const username = document.getElementById("signup-username").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
 
-    <!-- Signup -->
-    <form id="signup-form">
-      <input type="text" id="signup-username" placeholder="Username" required>
-      <input type="email" id="signup-email" placeholder="Email" required>
-      <input type="password" id="signup-password" placeholder="Password" required>
-      <button class="submit" type="submit">Sign Up</button>
-    </form>
+  // Create user
+  const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+  if(authError) return showMessage(authError.message,"error");
 
-    <div id="message" class="message"></div>
-  </div>
+  const user = authData.user;
+  if(user) {
+    // Insert profile with user.id
+    const { error: profileError } = await supabaseClient.from("profiles").insert([
+      { id: user.id, username, email }
+    ]);
+    if(profileError) return showMessage(profileError.message,"error");
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-<script>
+    showMessage("Signup successful! Redirecting...","success");
+    setTimeout(()=> window.location.href = "/" + username, 1000);
+  }
+});
+
+// Login
+loginForm.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  const { data: authData, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if(error) return showMessage(error.message,"error");
+
+  const user = authData.user;
+  if(user) {
+    const { data: profile } = await supabaseClient.from("profiles").select("username").eq("id", user.id).maybeSingle();
+    if(profile) {
+      showMessage("Login successful! Redirecting...","success");
+      setTimeout(()=> window.location.href = "/" + profile.username, 1000);
+    }
+  }
+});
+
 // Supabase client
 const supabaseClient = supabase.createClient(
-  "https://YOUR-PROJECT-ID.supabase.co", // replace
-  "YOUR-ANON-PUBLIC-KEY"                 // replace
+  "https://ujhfseertgazpvqheepy.supabase.co", // replace
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaGZzZWVydGdhenB2cWhlZXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0MjI4NDUsImV4cCI6MjA3Mzk5ODg0NX0.hkFcKm7M0_yBI0jJ2y2WimLEiEtRstHPvUzC8q3yQck"                 // replace
 );
 
 // Elements
