@@ -1,24 +1,23 @@
 // LOGIN
-const loginForm = document.getElementById('login-form');
-if(loginForm){
-  loginForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const username = document.getElementById('login-username').value.trim();
-    const password = document.getElementById('login-password').value.trim();
-    const user = JSON.parse(localStorage.getItem('user_' + username));
-    if(!user){ alert('❌ User not found'); return; }
-    if(user.password !== password){ alert('❌ Incorrect password'); return; }
-    alert(`✅ Welcome back, ${user.name}!`);
-    window.location.href = `/users/${username}/`;
+if(user.password !== password){ 
+  alert('❌ Incorrect password'); 
+  return; 
+}
+
+// Check if static folder exists
+fetch(`/users/${username}/profile.json`)
+  .then(res => {
+    if(res.ok){
+      alert(`✅ Welcome back, ${user.name}! Redirecting...`);
+      window.location.href = `/users/${username}/`;
+    } else {
+      alert("⚠️ Login successful, but your profile page doesn't exist yet.\nAsk the site owner to create /users/" + username);
+    }
+  })
+  .catch(() => {
+    alert("⚠️ Login successful, but your profile page doesn't exist yet.\nAsk the site owner to create /users/" + username);
   });
 
-  document.getElementById('forgot-btn').addEventListener('click', () => {
-    const username = prompt('Enter your username:');
-    const user = JSON.parse(localStorage.getItem('user_' + username));
-    if(!user){ alert('User not found'); return; }
-    alert(`🔑 Your password is: ${user.password}`);
-  });
-}
 
 // SIGNUP
 const signupForm = document.getElementById('signup-form');
