@@ -43,16 +43,33 @@
     padding: 20px 20px 28px;
   }
 
-  /* header image */
-  .card .logo {
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid var(--yellow);
-    margin-bottom: 14px;
-    background: #fff;
-  }
+<div class="card">
+  <div class="card-header">
+    <img src="https://i.pinimg.com/736x/01/3c/0b/013c0b61df562a9c90b991c98b7f7241.jpg" alt="evolu.space logo" class="card-logo">
+    <h1>evolu.space</h1>
+  </div>
+
+  <div class="tabs">
+    <button id="login-tab" class="active">login</button>
+    <button id="signup-tab">sign up</button>
+  </div>
+
+  <!-- Login -->
+  <form id="login-form" class="active">
+    <input type="email" id="login-email" placeholder="email" required>
+    <input type="password" id="login-password" placeholder="password" required>
+    <button class="submit" type="submit">login</button>
+  </form>
+
+  <!-- Signup -->
+  <form id="signup-form">
+    <input type="text" id="signup-username" placeholder="username" required>
+    <input type="email" id="signup-email" placeholder="email" required>
+    <input type="password" id="signup-password" placeholder="password" required>
+    <button class="submit" type="submit">sign up</button>
+  </form>
+</div>
+
 
   /* tabs row */
   .tabs {
