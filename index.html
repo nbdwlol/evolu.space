@@ -4,177 +4,53 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>evolu.space – login / signup</title>
-<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  body {
-    background: linear-gradient(135deg, #fff799, #ffea5c);
-    font-family: "Poppins", sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-    text-transform: lowercase;
-    padding: 10px;
-  }
-
-  .card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    width: 350px;
-    max-width: 100%;
-    padding: 2rem;
-    text-align: center;
-    overflow: hidden;
-  }
-
-  .card-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .card-logo {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    margin-bottom: 0.75rem;
-  }
-
-  .tabs {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 1.5rem;
-  }
-
-  .tab {
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: background 0.3s;
-    font-size: 0.95rem;
-  }
-
-  .tab.active {
-    background: #ffb700;
-    color: white;
-  }
-
-  .form-container {
-    position: relative;
-    min-height: 240px;
-  }
-
-  form {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    opacity: 0;
-    transform: translateY(20px);
-    pointer-events: none;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  form.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  input {
-    width: 100%;
-    padding: 14px;
-    margin: 10px 0;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    outline: none;
-    transition: border 0.3s;
-    font-family: inherit;
-    font-size: 1rem;
-  }
-
-  input:focus {
-    border: 1px solid #ffb700;
-  }
-
-  button {
-    background: #ffb700;
-    border: none;
-    color: white;
-    padding: 14px;
-    width: 100%;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 12px;
-    transition: background 0.3s;
-    font-family: inherit;
-    text-transform: lowercase;
-  }
-
-  button:hover {
-    background: #ffa500;
-  }
-
-  .message {
-    margin-top: 10px;
-    font-size: 0.9rem;
-  }
-
-  .error { color: red; }
-  .success { color: green; }
-
-  @media (max-width: 480px) {
-    .card {
-      padding: 1.5rem;
-      max-height: 95vh;
-      overflow-y: auto;
-    }
-    input, button { padding: 12px; font-size: 0.95rem; }
-    .tab { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
-    .form-container { min-height: 220px; }
-  }
+body { font-family:"Poppins",sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; background:linear-gradient(135deg,#fff799,#ffea5c); text-transform:lowercase; padding:10px;}
+.card { background:white; border-radius:20px; box-shadow:0 10px 40px rgba(0,0,0,0.1); width:350px; max-width:100%; padding:2rem; text-align:center; overflow:hidden;}
+.card-header { display:flex; flex-direction:column; align-items:center; margin-bottom:1.5rem;}
+.card-logo { width:80px; height:80px; object-fit:contain; margin-bottom:0.75rem;}
+.tabs { display:flex; justify-content:space-around; margin-bottom:1.5rem;}
+.tab { cursor:pointer; padding:0.5rem 1rem; border-radius:10px; font-weight:600; transition:background 0.3s; font-size:0.95rem;}
+.tab.active { background:#ffb700; color:white;}
+.form-container { position:relative; min-height:240px;}
+form { position:absolute; top:0; left:0; width:100%; opacity:0; transform:translateY(20px); pointer-events:none; transition:opacity 0.5s,transform 0.5s; display:flex; flex-direction:column; align-items:center;}
+form.active { opacity:1; transform:translateY(0); pointer-events:auto;}
+input { width:100%; padding:14px; margin:10px 0; border:1px solid #eee; border-radius:12px; outline:none; transition:border 0.3s; font-family:inherit; font-size:1rem;}
+input:focus { border:1px solid #ffb700;}
+button { background:#ffb700; border:none; color:white; padding:14px; width:100%; border-radius:12px; cursor:pointer; font-size:1rem; margin-top:12px; transition:background 0.3s; font-family:inherit; text-transform:lowercase;}
+button:hover { background:#ffa500;}
+.message { margin-top:10px; font-size:0.9rem;}
+.error { color:red;} .success { color:green;}
+@media(max-width:480px){ .card{padding:1.5rem; max-height:95vh; overflow-y:auto;} input,button{padding:12px; font-size:0.95rem;} .tab{font-size:0.85rem; padding:0.4rem 0.8rem;} .form-container{min-height:220px;}}
 </style>
 </head>
 <body>
-  <div class="card">
-    <div class="card-header">
-      <img src="https://i.pinimg.com/736x/01/3c/0b/013c0b61df562a9c90b991c98b7f7241.jpg" alt="evolu.space logo" class="card-logo">
-      <h1>evolu.space</h1>
-    </div>
-
-    <div class="tabs">
-      <div id="login-tab" class="tab active">login</div>
-      <div id="signup-tab" class="tab">signup</div>
-    </div>
-
-    <div class="form-container">
-      <!-- login -->
-      <form id="login-form" class="active">
-        <input type="email" id="login-email" placeholder="email" required />
-        <input type="password" id="login-password" placeholder="password" required />
-        <button type="submit">login</button>
-        <div class="message" id="login-message"></div>
-      </form>
-
-      <!-- signup -->
-      <form id="signup-form">
-        <input type="text" id="signup-username" placeholder="username" required />
-        <input type="email" id="signup-email" placeholder="email" required />
-        <input type="password" id="signup-password" placeholder="password" required />
-        <button type="submit">sign up</button>
-        <div class="message" id="signup-message"></div>
-      </form>
-    </div>
+<div class="card">
+  <div class="card-header">
+    <img src="https://i.pinimg.com/736x/01/3c/0b/013c0b61df562a9c90b991c98b7f7241.jpg" alt="logo" class="card-logo">
+    <h1>evolu.space</h1>
   </div>
+  <div class="tabs">
+    <div id="login-tab" class="tab active">login</div>
+    <div id="signup-tab" class="tab">signup</div>
+  </div>
+  <div class="form-container">
+    <form id="login-form" class="active">
+      <input type="email" id="login-email" placeholder="email" required />
+      <input type="password" id="login-password" placeholder="password" required />
+      <button type="submit">login</button>
+      <div class="message" id="login-message"></div>
+    </form>
+    <form id="signup-form">
+      <input type="text" id="signup-username" placeholder="username" required />
+      <input type="email" id="signup-email" placeholder="email" required />
+      <input type="password" id="signup-password" placeholder="password" required />
+      <button type="submit">sign up</button>
+      <div class="message" id="signup-message"></div>
+    </form>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
@@ -187,56 +63,62 @@ const loginForm = document.getElementById("login-form");
 const signupForm = document.getElementById("signup-form");
 
 loginTab.addEventListener("click", () => {
-  loginTab.classList.add("active");
-  signupTab.classList.remove("active");
-  loginForm.classList.add("active");
-  signupForm.classList.remove("active");
+  loginTab.classList.add("active"); signupTab.classList.remove("active");
+  loginForm.classList.add("active"); signupForm.classList.remove("active");
 });
-
 signupTab.addEventListener("click", () => {
-  signupTab.classList.add("active");
-  loginTab.classList.remove("active");
-  signupForm.classList.add("active");
-  loginForm.classList.remove("active");
+  signupTab.classList.add("active"); loginTab.classList.remove("active");
+  signupForm.classList.add("active"); loginForm.classList.remove("active");
 });
 
-function showMessage(elId, message, type) {
+function showMessage(elId, message, type){
   const el = document.getElementById(elId);
   el.textContent = message;
   el.className = "message " + type;
 }
 
+// Function to poll until email confirmation
+async function waitForConfirmation(userId, maxAttempts = 20, interval = 3000){
+  for(let i=0; i<maxAttempts; i++){
+    const { data, error } = await supabase.from("profiles").select("id").eq("id", userId).maybeSingle();
+    if(data) return true; // profile exists = confirmed
+    await new Promise(res=>setTimeout(res, interval));
+  }
+  return false;
+}
+
 // signup
 signupForm.addEventListener("submit", async e => {
   e.preventDefault();
-  const username = document.getElementById("signup-username").value;
-  const email = document.getElementById("signup-email").value;
+  const username = document.getElementById("signup-username").value.trim();
+  const email = document.getElementById("signup-email").value.trim();
   const password = document.getElementById("signup-password").value;
 
   try {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { username } } // optional user metadata
-    });
-    if (error) throw error;
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { username } } });
+    if(error) throw error;
 
-    // if email confirmation is required
-    if (data.user === null) {
-      showMessage("signup-message", "check your email to confirm your account", "success");
+    if(!data.user){
+      showMessage("signup-message", "check your email to confirm account", "success");
       return;
     }
 
-    // insert profile manually
-    const { error: profileError } = await supabase.from("profiles").insert([
-      { id: data.user.id, username, email }
-    ]);
-    if (profileError) throw profileError;
+    // insert profile immediately
+    const { error: profileError } = await supabase.from("profiles").insert([{ id: data.user.id, username, email }]);
+    if(profileError) throw profileError;
 
-    showMessage("signup-message", "signup successful, redirecting...", "success");
-    setTimeout(() => window.location.href = "/" + username, 1200);
+    showMessage("signup-message", "signup successful, waiting for confirmation...", "success");
 
-  } catch (err) {
+    // wait for email confirmation automatically
+    const confirmed = await waitForConfirmation(data.user.id);
+    if(confirmed){
+      showMessage("signup-message", "email confirmed! redirecting...", "success");
+      setTimeout(()=>window.location.href="/" + username, 1200);
+    } else {
+      showMessage("signup-message", "please confirm your email to login", "error");
+    }
+
+  } catch(err){
     showMessage("signup-message", err.message || "signup failed", "error");
   }
 });
@@ -244,22 +126,21 @@ signupForm.addEventListener("submit", async e => {
 // login
 loginForm.addEventListener("submit", async e => {
   e.preventDefault();
-  const email = document.getElementById("login-email").value;
+  const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value;
 
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if(error) throw error;
 
     const { data: profile, error: profileError } = await supabase.from("profiles").select("username").eq("id", data.user.id).maybeSingle();
-    if (profileError) throw profileError;
-
-    if (!profile) throw new Error("profile not found");
+    if(profileError) throw profileError;
+    if(!profile) throw new Error("profile not found");
 
     showMessage("login-message", "login successful, redirecting...", "success");
-    setTimeout(() => window.location.href = "/" + profile.username, 1200);
+    setTimeout(()=>window.location.href="/" + profile.username, 1200);
 
-  } catch (err) {
+  } catch(err){
     showMessage("login-message", err.message || "login failed", "error");
   }
 });
