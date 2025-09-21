@@ -6,100 +6,24 @@
 <title>evolu.space – login / signup</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body {
-  font-family: "Poppins", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  background: linear-gradient(135deg,#fff799,#ffea5c);
-  text-transform: lowercase;
-  padding: 10px;
-}
-.card {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-  width: 350px;
-  max-width: 100%;
-  padding: 2rem;
-  text-align: center;
-}
-.card-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-.card-logo {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  margin-bottom: 0.75rem;
-}
-.tabs {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 1.5rem;
-}
-.tab {
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  font-weight: 600;
-  transition: background 0.3s;
-  font-size: 0.95rem;
-}
-.tab.active {
-  background: #ffb700;
-  color: white;
-}
-.form-container {
-  display: flex;
-  flex-direction: column;
-}
-form {
-  display: none;
-  flex-direction: column;
-}
-form.active {
-  display: flex;
-}
-input {
-  width: 100%;
-  padding: 14px;
-  margin: 10px 0;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  outline: none;
-  transition: border 0.3s;
-  font-family: inherit;
-  font-size: 1rem;
-}
-input:focus { border: 1px solid #ffb700; }
-button {
-  background: #ffb700;
-  border: none;
-  color: white;
-  padding: 14px;
-  width: 100%;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 12px;
-  transition: background 0.3s;
-  font-family: inherit;
-}
-button:hover { background: #ffa500; }
-.message { margin-top: 10px; font-size: 0.9rem; }
+body { font-family:"Poppins",sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; background:linear-gradient(135deg,#fff799,#ffea5c); text-transform:lowercase; padding:10px;}
+.card { background:white; border-radius:20px; box-shadow:0 10px 40px rgba(0,0,0,0.1); width:350px; max-width:100%; padding:2rem; text-align:center;}
+.card-header { display:flex; flex-direction:column; align-items:center; margin-bottom:1.5rem;}
+.card-logo { width:80px; height:80px; object-fit:contain; margin-bottom:0.75rem;}
+.tabs { display:flex; justify-content:space-around; margin-bottom:1.5rem;}
+.tab { cursor:pointer; padding:0.5rem 1rem; border-radius:10px; font-weight:600; transition:background 0.3s; font-size:0.95rem;}
+.tab.active { background:#ffb700; color:white;}
+.form-container { display:flex; flex-direction:column;}
+form { display:none; flex-direction:column;}
+form.active { display:flex;}
+input { width:100%; padding:14px; margin:10px 0; border:1px solid #eee; border-radius:12px; outline:none; transition:border 0.3s; font-family:inherit; font-size:1rem;}
+input:focus { border:1px solid #ffb700; }
+button { background:#ffb700; border:none; color:white; padding:14px; width:100%; border-radius:12px; cursor:pointer; font-size:1rem; margin-top:12px; transition:background 0.3s; font-family:inherit; }
+button:hover { background:#ffa500; }
+.message { margin-top:10px; font-size:0.9rem;}
 .error { color:red; }
 .success { color:green; }
-@media(max-width:480px){
-  .card{padding:1.5rem;}
-  input,button{padding:12px;font-size:0.95rem;}
-  .tab{font-size:0.85rem;padding:0.4rem 0.8rem;}
-}
+@media(max-width:480px){ .card{padding:1.5rem;} input,button{padding:12px;font-size:0.95rem;} .tab{font-size:0.85rem;padding:0.4rem 0.8rem;} }
 </style>
 </head>
 <body>
@@ -133,7 +57,8 @@ button:hover { background: #ffa500; }
 </div>
 
 <script>
-// Supabase setup
+document.addEventListener("DOMContentLoaded", () => {
+
 const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
 const SUPABASE_KEY = "YOUR_SUPABASE_KEY"; // replace
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -169,20 +94,16 @@ signupForm.addEventListener("submit", async e => {
   const password = document.getElementById("signup-password").value;
 
   try {
-    const { data, error } = await supabase.auth.signUp({
-      email, password, options: { data: { username } }
-    });
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { username } } });
     if(error) throw error;
-
-    // Insert profile
-    if(data.user) {
+    if(data.user){
+      // insert profile
       const { error: profileError } = await supabase.from("profiles").insert([{ id: data.user.id, username, email }]);
       if(profileError) throw profileError;
     }
-
-    showMessage("signup-message","Signup successful! Check your email to confirm.","success");
+    showMessage("signup-message", "signup successful! check your email to confirm.", "success");
   } catch(err){
-    showMessage("signup-message", err.message || "Signup failed","error");
+    showMessage("signup-message", err.message || "Signup failed", "error");
   }
 });
 
@@ -195,17 +116,19 @@ loginForm.addEventListener("submit", async e => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if(error) throw error;
+    if(!data.user) throw new Error("Login failed. Check your email confirmation.");
 
-    // Fetch profile
     const { data: profile, error: profileError } = await supabase.from("profiles").select("username").eq("id", data.user.id).maybeSingle();
     if(profileError) throw profileError;
     if(!profile) throw new Error("Profile not found.");
 
-    showMessage("login-message", "Login successful, redirecting...", "success");
+    showMessage("login-message", "login successful, redirecting...", "success");
     setTimeout(()=> window.location.href="/" + profile.username, 1000);
   } catch(err){
-    showMessage("login-message", err.message || "Login failed","error");
+    showMessage("login-message", err.message || "Login failed", "error");
   }
+});
+
 });
 </script>
 </body>
