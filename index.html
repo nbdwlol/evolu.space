@@ -8,39 +8,98 @@
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-  <!-- Fonts + Styles -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
-
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 
   <style>
-    /* Extra styles for cursor movement effect */
+    /* Reset */
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+
     body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffb6c1, #ff69b4);
       perspective: 1000px;
       overflow: hidden;
     }
 
+    /* Floating card */
     .card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       transition: transform 0.1s ease-out;
     }
 
-    .card h1 {
-      font-size: 2.2rem;
+    h1 {
+      font-size: 2.4rem;
+      color: #fff;
       margin-bottom: 20px;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .tabs button {
+      flex:1;
+      padding: 10px;
+      border:none;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      font-weight:600;
+      cursor:pointer;
+      transition: background 0.3s;
     }
 
     .tabs button.active {
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      background: rgba(255,255,255,0.45);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    input, button.submit {
-      transition: transform 0.1s ease-out;
+    form { display:flex; flex-direction:column; gap:12px; }
+
+    input {
+      padding: 12px;
+      border:none;
+      border-radius:12px;
+      outline:none;
+      font-size:1rem;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      transition: transform 0.1s ease-out, background 0.3s;
     }
 
+    input::placeholder { color: rgba(255,255,255,0.7); }
+
+    button.submit {
+      background: #fff;
+      color: #ff69b4;
+      font-weight:bold;
+      cursor:pointer;
+      border:none;
+      padding:12px;
+      border-radius:12px;
+      transition: transform 0.1s ease-out, background 0.3s;
+    }
+
+    button.submit:hover {
+      background: #ffe0f0;
+      transform: translateY(-3px);
+    }
+
+    /* Glow effect behind card */
     body::before {
       content: "";
       position: fixed;
@@ -48,7 +107,7 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.1), transparent 70%);
+      background: radial-gradient(circle at center, rgba(255,255,255,0.15), transparent 70%);
       pointer-events: none;
       transform: translate3d(0,0,0);
     }
@@ -78,14 +137,13 @@
     </form>
   </div>
 
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script>
-    // Supabase init
     const supabase = supabase.createClient(
       "https://YOUR-PROJECT-ID.supabase.co",
       "YOUR-ANON-PUBLIC-KEY"
     );
 
-    // Tabs
     const loginTab = document.getElementById("login-tab");
     const signupTab = document.getElementById("signup-tab");
     const loginForm = document.getElementById("login-form");
@@ -104,50 +162,36 @@
       loginForm.classList.remove("active");
     };
 
-    // Login
-    loginForm.addEventListener("submit", async (e) => {
+    loginForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
       const email = document.getElementById("login-email").value;
       const password = document.getElementById("login-password").value;
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return alert(error.message);
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("email", email)
-        .single();
-
-      if (profile) window.location.href = "/" + profile.username;
+      if(error) return alert(error.message);
+      const { data: profile } = await supabase.from("profiles").select("username").eq("email", email).single();
+      if(profile) window.location.href = "/" + profile.username;
     });
 
-    // Signup
-    signupForm.addEventListener("submit", async (e) => {
+    signupForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
       const username = document.getElementById("signup-username").value;
       const email = document.getElementById("signup-email").value;
       const password = document.getElementById("signup-password").value;
-
       const { error } = await supabase.auth.signUp({ email, password });
-      if (error) return alert(error.message);
-
+      if(error) return alert(error.message);
       await supabase.from("profiles").insert([{ username, email }]);
-
       window.location.href = "/" + username;
     });
 
-    // Cursor movement parallax effect
+    // Cute cursor movement
     const card = document.querySelector('.card');
     const inputs = document.querySelectorAll('input, button.submit');
 
-    document.addEventListener('mousemove', (e) => {
-      const x = (window.innerWidth/2 - e.clientX) / 25;
-      const y = (window.innerHeight/2 - e.clientY) / 25;
+    document.addEventListener('mousemove', (e)=>{
+      const x = (window.innerWidth/2 - e.clientX)/20;
+      const y = (window.innerHeight/2 - e.clientY)/20;
       card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-
-      inputs.forEach(el => {
-        el.style.transform = `translate(${x/2}px, ${y/2}px)`;
-      });
+      inputs.forEach(el=>el.style.transform=`translate(${x/2}px, ${y/2}px)`);
     });
   </script>
 </body>
