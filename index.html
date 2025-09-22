@@ -4,269 +4,178 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>evolu space – login / signup</title>
-<link rel="icon" href="/favicon.ico" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --yellow: #ffb700;
     --yellow-dark: #ffa500;
-    --bg-a: #fff799;
-    --bg-b: #ffea5c;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, sans-serif; }
   html, body { height: 100%; }
-
   body {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-    min-height: 100vh;
-    text-transform: lowercase;
-    background: #111;
-    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; background: #111; overflow: hidden;
   }
-
-  /* PARTICLE CANVAS */
   #particle-canvas { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
-
-  /* card */
   .card {
-    width: 380px;
-    max-width: 100%;
+    width: 380px; max-width: 100%;
     background: rgba(255,255,255,0.95);
-    border-radius: 18px;
-    box-shadow: 0 18px 50px rgba(0,0,0,0.12);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 20px 28px;
-    position: relative;
-    z-index: 1;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    padding: 24px;
   }
-
-  .card .logo {
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 14px;
-    background: #fff;
-  }
-
-  .tabs {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
+  .tabs { display: flex; margin-bottom: 16px; }
   .tab {
-    padding: 8px 14px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    background: rgba(0,0,0,0.03);
-    color: #222;
-    transition: all .18s ease;
+    flex: 1; text-align: center; padding: 10px; cursor: pointer;
+    font-weight: 600; border-bottom: 2px solid transparent; transition: 0.2s;
   }
-  .tab.active {
-    background: var(--yellow);
-    color: #fff;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  }
-
-  .form-inner { width: 100%; max-width: 320px; margin: 0 auto; }
-
-  h2 {
-    color: var(--yellow);
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-
-  form { display: none; width: 100%; }
-  form.active { display: block; }
-
+  .tab.active { border-color: var(--yellow); color: var(--yellow-dark); }
+  .form { display: none; }
+  .form.active { display: block; }
   .field { margin-bottom: 12px; }
-
-  input[type="text"], input[type="email"], input[type="password"] {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid #eee;
-    outline: none;
-    font-size: 1rem;
+  input {
+    width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;
+    font-size: 15px;
   }
-  input::placeholder { color: #9a9a9a; opacity: .9; }
-  input:focus { border-color: var(--yellow); box-shadow: 0 6px 18px rgba(255,183,0,0.08); }
-
-  button.submit {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    background: var(--yellow);
-    color: #fff;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 1rem;
+  button {
+    width: 100%; padding: 10px;
+    background: var(--yellow); border: none; border-radius: 6px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
   }
-  button.submit:hover { background: var(--yellow-dark); }
-
-  .message {
-    margin-top: 10px;
-    font-size: 0.92rem;
-    text-align: center;
-    min-height: 20px;
-  }
-  .message.error { color: #c82323; }
-  .message.success { color: #14794d; }
+  button:hover { background: var(--yellow-dark); }
+  .error, .success { margin-top: 10px; font-size: 14px; }
+  .error { color: red; }
+  .success { color: green; }
 </style>
 </head>
 <body>
-  <!-- Particle background -->
-  <canvas id="particle-canvas"></canvas>
-
-  <div class="card" role="main" aria-labelledby="card-title">
-    <img class="logo" src="https://i.pinimg.com/736x/01/3c/0b/013c0b61df562a9c90b991c98b7f7241.jpg" alt="evolu logo" />
-
-    <div class="tabs" role="tablist" aria-label="auth tabs">
-      <div id="login-tab" class="tab active" role="tab" aria-selected="true">login</div>
-      <div id="signup-tab" class="tab" role="tab" aria-selected="false">signup</div>
-    </div>
-
-    <div class="form-inner">
-      <!-- login form -->
-      <form id="login-form" class="active" aria-hidden="false">
-        <h2 id="card-title">login</h2>
-        <div class="field"><input id="login-email" type="email" placeholder="email" required /></div>
-        <div class="field"><input id="login-password" type="password" placeholder="password" required /></div>
-        <div class="field"><button class="submit" type="submit">login</button></div>
-        <div id="login-message" class="message" aria-live="polite"></div>
-      </form>
-
-      <!-- signup form -->
-      <form id="signup-form" aria-hidden="true">
-        <h2>signup</h2>
-        <div class="field"><input id="signup-username" type="text" placeholder="username" required /></div>
-        <div class="field"><input id="signup-email" type="email" placeholder="email" required /></div>
-        <div class="field"><input id="signup-password" type="password" placeholder="password" required /></div>
-        <div class="field"><button class="submit" type="submit">signup</button></div>
-        <div id="signup-message" class="message" aria-live="polite"></div>
-      </form>
-    </div>
+<canvas id="particle-canvas"></canvas>
+<div class="card">
+  <div class="tabs">
+    <div id="loginTab" class="tab active">login</div>
+    <div id="signupTab" class="tab">signup</div>
   </div>
+  <div id="loginForm" class="form active">
+    <div class="field"><input type="email" id="loginEmail" placeholder="email" required></div>
+    <div class="field"><input type="password" id="loginPassword" placeholder="password" required></div>
+    <button id="loginBtn">login</button>
+    <div id="loginMessage"></div>
+  </div>
+  <div id="signupForm" class="form">
+    <div class="field"><input type="email" id="signupEmail" placeholder="email" required></div>
+    <div class="field"><input type="password" id="signupPassword" placeholder="password" required></div>
+    <button id="signupBtn">signup</button>
+    <div id="signupMessage"></div>
+  </div>
+</div>
 
 <script>
-const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
-const SUPABASE_KEY = "YOUR_SUPABASE_KEY"; // replace
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(
+  "https://YOUR-PROJECT-REF.supabase.co",
+  "YOUR-ANON-KEY"
+);
 
-/* Tabs */
-const loginTab = document.getElementById('login-tab');
-const signupTab = document.getElementById('signup-tab');
-const loginForm = document.getElementById('login-form');
-const signupForm = document.getElementById('signup-form');
-const loginMessage = document.getElementById('login-message');
-const signupMessage = document.getElementById('signup-message');
+// Tab switching
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
 
-function setActive(tabName){
-  if(tabName==='login'){
-    loginTab.classList.add('active');
-    signupTab.classList.remove('active');
-    loginForm.classList.add('active'); loginForm.setAttribute('aria-hidden','false');
-    signupForm.classList.remove('active'); signupForm.setAttribute('aria-hidden','true');
-  }else{
-    signupTab.classList.add('active');
-    loginTab.classList.remove('active');
-    signupForm.classList.add('active'); signupForm.setAttribute('aria-hidden','false');
-    loginForm.classList.remove('active'); loginForm.setAttribute('aria-hidden','true');
+loginTab.onclick = () => {
+  loginTab.classList.add("active");
+  signupTab.classList.remove("active");
+  loginForm.classList.add("active");
+  signupForm.classList.remove("active");
+};
+signupTab.onclick = () => {
+  signupTab.classList.add("active");
+  loginTab.classList.remove("active");
+  signupForm.classList.add("active");
+  loginForm.classList.remove("active");
+};
+
+// Login
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const msg = document.getElementById("loginMessage");
+  if (error) msg.innerHTML = `<div class="error">${error.message}</div>`;
+  else {
+    msg.innerHTML = `<div class="success">logged in! redirecting…</div>`;
+    setTimeout(() => window.location.href = "/dashboard.html", 1000);
   }
+};
+
+// Signup
+document.getElementById("signupBtn").onclick = async () => {
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  const msg = document.getElementById("signupMessage");
+  if (error) msg.innerHTML = `<div class="error">${error.message}</div>`;
+  else msg.innerHTML = `<div class="success">check your email to confirm signup</div>`;
+};
+</script>
+
+<script>
+// Particle system with mouse interaction
+const canvas = document.getElementById("particle-canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const numParticles = 80;
+const mouse = { x: null, y: null };
+
+for (let i = 0; i < numParticles; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: 2 + Math.random() * 2,
+    dx: (Math.random() - 0.5) * 1,
+    dy: (Math.random() - 0.5) * 1
+  });
 }
-loginTab.addEventListener('click',()=>setActive('login'));
-signupTab.addEventListener('click',()=>setActive('signup'));
 
-function show(el,text,type='error'){ el.textContent=text; el.className=`message ${type}`; }
+function drawParticles() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for (let p of particles) {
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = "#ffcc00";
+    ctx.fill();
 
-/* SIGNUP */
-signupForm.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  signupMessage.textContent='';
-  const username=document.getElementById('signup-username').value.trim();
-  const email=document.getElementById('signup-email').value.trim();
-  const password=document.getElementById('signup-password').value;
-  if(!username||!email||!password) return show(signupMessage,'please fill all fields','error');
+    // movement
+    p.x += p.dx; p.y += p.dy;
 
-  const { data, error: signErr } = await supabaseClient.auth.signUp({ email, password });
-  if(signErr) return show(signupMessage, signErr.message,'error');
-  if(!data.user) return show(signupMessage,'unexpected error during signup','error');
+    // bounce edges
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
 
-  const { error: profileErr } = await supabaseClient.from('profiles').insert([{ id:data.user.id, username, email }]);
-  if(profileErr) return show(signupMessage, profileErr.message,'error');
-
-  show(signupMessage,'signup successful! check your email to confirm.','success');
-});
-
-/* LOGIN */
-loginForm.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  loginMessage.textContent='';
-  const email=document.getElementById('login-email').value.trim();
-  const password=document.getElementById('login-password').value;
-  if(!email||!password) return show(loginMessage,'please provide email and password','error');
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if(error) return show(loginMessage, error.message,'error');
-  if(!data.user) return show(loginMessage,'login succeeded but user not found','error');
-
-  // wait for confirmed email
-  if(!data.user.confirmed_at) return show(loginMessage,'please confirm your email before logging in','error');
-
-  const { data: profile, error: profileError } = await supabaseClient.from('profiles').select('username').eq('id', data.user.id).single();
-  if(profileError) return show(loginMessage, profileError.message,'error');
-
-  show(loginMessage,'login successful — redirecting...','success');
-  setTimeout(()=>window.location.href='/' + encodeURIComponent(profile.username),800);
-});
-
-/* PARTICLE ANIMATION */
-const canvas=document.getElementById('particle-canvas');
-const ctx=canvas.getContext('2d');
-let width=canvas.width=window.innerWidth;
-let height=canvas.height=window.innerHeight;
-const particles=[];
-const particleCount=80;
-function random(min,max){return Math.random()*(max-min)+min;}
-class Particle{
-  constructor(){ this.x=random(0,width); this.y=random(0,height); this.vx=random(-0.3,0.3); this.vy=random(-0.3,0.3); this.size=random(1,3);}
-  update(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>width)this.vx*=-1; if(this.y<0||this.y>height)this.vy*=-1;}
-  draw(){ ctx.fillStyle='rgba(255,183,0,0.7)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();}
-}
-for(let i=0;i<particleCount;i++) particles.push(new Particle());
-function animate(){
-  ctx.clearRect(0,0,width,height);
-  for(let i=0;i<particles.length;i++){
-    let p1=particles[i];
-    p1.update(); p1.draw();
-    for(let j=i+1;j<particles.length;j++){
-      let p2=particles[j]; let dx=p1.x-p2.x; let dy=p1.y-p2.y;
-      let dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<100){
-        ctx.strokeStyle='rgba(255,183,0,'+(0.2-dist/500)+')';
-        ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+    // gentle attraction to mouse
+    if (mouse.x && mouse.y) {
+      const distX = mouse.x - p.x;
+      const distY = mouse.y - p.y;
+      const dist = Math.sqrt(distX*distX + distY*distY);
+      if (dist < 120) {
+        p.x -= distX * -0.002;
+        p.y -= distY * -0.002;
       }
     }
   }
-  requestAnimationFrame(animate);
+  requestAnimationFrame(drawParticles);
 }
-animate();
-window.addEventListener('resize',()=>{ width=canvas.width=window.innerWidth; height=canvas.height=window.innerHeight; });
+drawParticles();
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+window.addEventListener("mousemove", e => {
+  mouse.x = e.x; mouse.y = e.y;
+});
 </script>
 </body>
 </html>
