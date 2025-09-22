@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>evolu space – login / signup</title>
 <link rel="icon" href="/favicon.ico" />
-<!-- supabase client -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
@@ -20,41 +19,45 @@
   html, body { height: 100%; }
 
   body {
-    background: linear-gradient(135deg, var(--bg-a), var(--bg-b));
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 12px;
     min-height: 100vh;
     text-transform: lowercase;
+    background: #111;
+    overflow: hidden;
   }
+
+  /* PARTICLE CANVAS */
+  #particle-canvas { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
 
   /* card */
   .card {
     width: 380px;
     max-width: 100%;
-    background: #fff;
+    background: rgba(255,255,255,0.95);
     border-radius: 18px;
     box-shadow: 0 18px 50px rgba(0,0,0,0.12);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;          /* center children horizontally */
+    align-items: center;
     padding: 20px 20px 28px;
+    position: relative;
+    z-index: 1;
   }
 
-  /* header image */
   .card .logo {
     width: 96px;
     height: 96px;
     border-radius: 50%;
     object-fit: cover;
-    border: 0px solid var(--yellow);
     margin-bottom: 14px;
     background: #fff;
   }
 
-  /* tabs row */
   .tabs {
     width: 100%;
     display: flex;
@@ -77,12 +80,7 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   }
 
-  /* inner container keeps inputs/button centered and limited width */
-  .form-inner {
-    width: 100%;
-    max-width: 320px;    /* controls horizontal width of inputs */
-    margin: 0 auto;
-  }
+  .form-inner { width: 100%; max-width: 320px; margin: 0 auto; }
 
   h2 {
     color: var(--yellow);
@@ -92,19 +90,12 @@
     text-align: center;
   }
 
-  form {
-    display: none;
-    width: 100%;
-  }
+  form { display: none; width: 100%; }
   form.active { display: block; }
 
-  .field {
-    margin-bottom: 12px;
-  }
+  .field { margin-bottom: 12px; }
 
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
+  input[type="text"], input[type="email"], input[type="password"] {
     width: 100%;
     padding: 12px 14px;
     border-radius: 10px;
@@ -113,11 +104,7 @@
     font-size: 1rem;
   }
   input::placeholder { color: #9a9a9a; opacity: .9; }
-
-  input:focus {
-    border-color: var(--yellow);
-    box-shadow: 0 6px 18px rgba(255,183,0,0.08);
-  }
+  input:focus { border-color: var(--yellow); box-shadow: 0 6px 18px rgba(255,183,0,0.08); }
 
   button.submit {
     width: 100%;
@@ -140,29 +127,13 @@
   }
   .message.error { color: #c82323; }
   .message.success { color: #14794d; }
-
-  /* ensure card never gets taller than viewport on short phones */
-  @media (max-height: 600px) {
-    .card {
-      max-height: 94vh;
-      padding: 12px;
-      overflow-y: auto;
-    }
-    .form-inner { max-width: 100%; padding-bottom: 8px; }
-  }
-
-  /* extra mobile tweaks */
-  @media (max-width: 420px) {
-    .card { padding: 14px; }
-    .logo { width: 84px; height:84px; margin-bottom:10px; }
-    input, button.submit { padding: 12px; font-size: 0.98rem; }
-  }
 </style>
 </head>
 <body>
+  <!-- Particle background -->
+  <canvas id="particle-canvas"></canvas>
 
   <div class="card" role="main" aria-labelledby="card-title">
-    <!-- top image: change src to your logo/avatar -->
     <img class="logo" src="https://i.pinimg.com/736x/01/3c/0b/013c0b61df562a9c90b991c98b7f7241.jpg" alt="evolu logo" />
 
     <div class="tabs" role="tablist" aria-label="auth tabs">
@@ -193,13 +164,11 @@
   </div>
 
 <script>
-/*  Replace with your Supabase details */
-const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // <--- replace
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaGZzZWVydGdhenB2cWhlZXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0MjI4NDUsImV4cCI6MjA3Mzk5ODg0NX0.hkFcKm7M0_yBI0jJ2y2WimLEiEtRstHPvUzC8q3yQck";                  // <--- replace
-
+const SUPABASE_URL = "https://ujhfseertgazpvqheepy.supabase.co"; // replace
+const SUPABASE_KEY = "YOUR_SUPABASE_KEY"; // replace
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* UI elements */
+/* Tabs */
 const loginTab = document.getElementById('login-tab');
 const signupTab = document.getElementById('signup-tab');
 const loginForm = document.getElementById('login-form');
@@ -207,84 +176,97 @@ const signupForm = document.getElementById('signup-form');
 const loginMessage = document.getElementById('login-message');
 const signupMessage = document.getElementById('signup-message');
 
-/* helper */
-function setActive(tabName) {
-  if (tabName === 'login') {
+function setActive(tabName){
+  if(tabName==='login'){
     loginTab.classList.add('active');
     signupTab.classList.remove('active');
-    loginForm.classList.add('active');
-    signupForm.classList.remove('active');
-    loginForm.setAttribute('aria-hidden','false');
-    signupForm.setAttribute('aria-hidden','true');
-  } else {
+    loginForm.classList.add('active'); loginForm.setAttribute('aria-hidden','false');
+    signupForm.classList.remove('active'); signupForm.setAttribute('aria-hidden','true');
+  }else{
     signupTab.classList.add('active');
     loginTab.classList.remove('active');
-    signupForm.classList.add('active');
-    loginForm.classList.remove('active');
-    signupForm.setAttribute('aria-hidden','false');
-    loginForm.setAttribute('aria-hidden','true');
+    signupForm.classList.add('active'); signupForm.setAttribute('aria-hidden','false');
+    loginForm.classList.remove('active'); loginForm.setAttribute('aria-hidden','true');
   }
 }
+loginTab.addEventListener('click',()=>setActive('login'));
+signupTab.addEventListener('click',()=>setActive('signup'));
 
-/* tab clicks */
-loginTab.addEventListener('click', () => setActive('login'));
-signupTab.addEventListener('click', () => setActive('signup'));
-
-/* show messages */
-function show(el, text, type = 'error') {
-  el.textContent = text;
-  el.className = `message ${type}`;
-}
+function show(el,text,type='error'){ el.textContent=text; el.className=`message ${type}`; }
 
 /* SIGNUP */
-signupForm.addEventListener('submit', async (e) => {
+signupForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
-  signupMessage.textContent = '';
-
-  const username = document.getElementById('signup-username').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const password = document.getElementById('signup-password').value;
-
-  if (!username || !email || !password) return show(signupMessage, 'please fill all fields', 'error');
+  signupMessage.textContent='';
+  const username=document.getElementById('signup-username').value.trim();
+  const email=document.getElementById('signup-email').value.trim();
+  const password=document.getElementById('signup-password').value;
+  if(!username||!email||!password) return show(signupMessage,'please fill all fields','error');
 
   const { data, error: signErr } = await supabaseClient.auth.signUp({ email, password });
-  if (signErr) return show(signupMessage, signErr.message, 'error');
+  if(signErr) return show(signupMessage, signErr.message,'error');
+  if(!data.user) return show(signupMessage,'unexpected error during signup','error');
 
-  const user = data.user;
-  if (!user) return show(signupMessage, 'unexpected error during signup', 'error');
+  const { error: profileErr } = await supabaseClient.from('profiles').insert([{ id:data.user.id, username, email }]);
+  if(profileErr) return show(signupMessage, profileErr.message,'error');
 
-  const { error: profileErr } = await supabaseClient.from('profiles').insert([
-    { id: user.id, username, email }
-  ]);
-  if (profileErr) return show(signupMessage, profileErr.message, 'error');
-
-  show(signupMessage, 'signup successful — redirecting...', 'success');
-  setTimeout(() => window.location.href = '/' + encodeURIComponent(username), 900);
+  show(signupMessage,'signup successful! check your email to confirm.','success');
 });
 
 /* LOGIN */
-loginForm.addEventListener('submit', async (e) => {
+loginForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
-  loginMessage.textContent = '';
-
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  if (!email || !password) return show(loginMessage, 'please provide email and password', 'error');
+  loginMessage.textContent='';
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  if(!email||!password) return show(loginMessage,'please provide email and password','error');
 
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if (error) return show(loginMessage, error.message, 'error');
+  if(error) return show(loginMessage, error.message,'error');
+  if(!data.user) return show(loginMessage,'login succeeded but user not found','error');
 
-  const user = data.user;
-  if (!user) return show(loginMessage, 'login succeeded but user not found', 'error');
+  // wait for confirmed email
+  if(!data.user.confirmed_at) return show(loginMessage,'please confirm your email before logging in','error');
 
-  const { data: profile, error: profileError } = await supabaseClient.from('profiles')
-    .select('username').eq('id', user.id).single();
+  const { data: profile, error: profileError } = await supabaseClient.from('profiles').select('username').eq('id', data.user.id).single();
+  if(profileError) return show(loginMessage, profileError.message,'error');
 
-  if (profileError) return show(loginMessage, profileError.message, 'error');
-
-  show(loginMessage, 'login successful — redirecting...', 'success');
-  setTimeout(() => window.location.href = '/' + encodeURIComponent(profile.username), 800);
+  show(loginMessage,'login successful — redirecting...','success');
+  setTimeout(()=>window.location.href='/' + encodeURIComponent(profile.username),800);
 });
+
+/* PARTICLE ANIMATION */
+const canvas=document.getElementById('particle-canvas');
+const ctx=canvas.getContext('2d');
+let width=canvas.width=window.innerWidth;
+let height=canvas.height=window.innerHeight;
+const particles=[];
+const particleCount=80;
+function random(min,max){return Math.random()*(max-min)+min;}
+class Particle{
+  constructor(){ this.x=random(0,width); this.y=random(0,height); this.vx=random(-0.3,0.3); this.vy=random(-0.3,0.3); this.size=random(1,3);}
+  update(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>width)this.vx*=-1; if(this.y<0||this.y>height)this.vy*=-1;}
+  draw(){ ctx.fillStyle='rgba(255,183,0,0.7)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();}
+}
+for(let i=0;i<particleCount;i++) particles.push(new Particle());
+function animate(){
+  ctx.clearRect(0,0,width,height);
+  for(let i=0;i<particles.length;i++){
+    let p1=particles[i];
+    p1.update(); p1.draw();
+    for(let j=i+1;j<particles.length;j++){
+      let p2=particles[j]; let dx=p1.x-p2.x; let dy=p1.y-p2.y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<100){
+        ctx.strokeStyle='rgba(255,183,0,'+(0.2-dist/500)+')';
+        ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+window.addEventListener('resize',()=>{ width=canvas.width=window.innerWidth; height=canvas.height=window.innerHeight; });
 </script>
 </body>
 </html>
