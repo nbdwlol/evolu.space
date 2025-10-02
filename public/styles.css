@@ -1,0 +1,25 @@
+/* public/styles.css */
+:root{
+  --bg:#071229; --card:#0f1724; --accent:#ff6b6b; --muted:#9aa4b2;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#02030a,#071229);color:#e6eef6;padding:18px;
+}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.brand{font-family:"Courier New",monospace;font-weight:700}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px;margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+.row{display:flex;gap:8px;align-items:center}
+.btn{background:linear-gradient(180deg,var(--accent),#e94b4b);border:none;padding:8px 10px;border-radius:6px;color:#fff;cursor:pointer;font-weight:600}
+.btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+.hidden{display:none}
+.profileRow{display:flex;gap:12px}
+.avatarWrap img{width:120px;height:120px;border-radius:6px;object-fit:cover;border:3px solid rgba(255,255,255,0.03)}
+.profileEdit input, .profileEdit textarea, input, textarea{width:100%;padding:8px;border-radius:6px;background:transparent;border:1px dashed rgba(255,255,255,0.06);color:inherit}
+#usersList{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:8px}
+.userCard{padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);cursor:pointer}
+.profileHeader{display:flex;gap:12px;align-items:center}
+.profileHeader img{width:72px;height:72px;border-radius:6px;object-fit:cover}
+#posts .post{padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+#guestbook .comment{padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+footer{text-align:center;color:var(--muted);margin-top:8px}
