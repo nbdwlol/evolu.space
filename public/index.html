@@ -1,0 +1,84 @@
+<!-- public/index.html -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>myspace-networked</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="brand">myspace-networked</div>
+      <div id="authArea"></div>
+    </header>
+
+    <main>
+      <section id="mePanel" class="card hidden">
+        <h3>Your profile</h3>
+        <div class="profileRow">
+          <div class="avatarWrap">
+            <img id="meAvatar" src="/default-avatar.png" alt="avatar" />
+            <input id="avatarFile" type="file" accept="image/*">
+            <button id="uploadAvatarBtn" class="btn">Upload avatar</button>
+          </div>
+          <div class="profileEdit">
+            <input id="displayName" placeholder="Display name" />
+            <textarea id="bio" placeholder="short bio"></textarea>
+            <div class="row">
+              <button id="saveProfile" class="btn">Save</button>
+              <button id="logoutBtn" class="btn secondary">Logout</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="explore" class="card">
+        <h3>Explore users</h3>
+        <div class="row">
+          <input id="searchUsers" placeholder="search users" />
+          <button id="searchBtn" class="btn">search</button>
+        </div>
+        <div id="usersList"></div>
+      </section>
+
+      <section id="profileView" class="card hidden">
+        <div id="profileHeader" class="profileHeader">
+          <img id="profileAvatar" src="/default-avatar.png" />
+          <div>
+            <h2 id="profileName"></h2>
+            <p id="profileBio"></p>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <div style="flex:1">
+            <h4>Posts</h4>
+            <div id="posts"></div>
+            <div id="postComposer" class="hidden">
+              <input id="postTitle" placeholder="title (optional)" />
+              <textarea id="postBody" placeholder="write a post..."></textarea>
+              <button id="postBtn" class="btn">Post</button>
+            </div>
+          </div>
+
+          <aside style="width:320px; margin-left:16px">
+            <h4>Guestbook</h4>
+            <div id="guestbook"></div>
+            <div id="guestForm">
+              <input id="guestName" placeholder="your name" />
+              <input id="guestText" placeholder="say hi!" />
+              <button id="guestBtn" class="btn">Leave comment</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer>server-backed demo • data stored in SQLite • run locally</footer>
+  </div>
+
+<script src="/app.js"></script>
+</body>
+</html>
